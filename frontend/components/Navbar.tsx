@@ -52,22 +52,6 @@ export default function Navbar() {
                   asChild
                   className={navigationMenuTriggerStyle()}
                 >
-                  <Link href="/blog">Blog</Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <Link href="/about">About</Link>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
                   <Link href="/search">Search</Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
@@ -84,8 +68,8 @@ export default function Navbar() {
           {!loading && user && (
             <>
               <span className="text-sm">Hello, {user.email}</span>
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={async () => {
                   try {
                     await logoutAction();
@@ -147,8 +131,8 @@ export default function Navbar() {
             {!loading && user && (
               <>
                 <span className="text-sm">Hello, {user.email}</span>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={async () => {
                     try {
                       await logoutAction();

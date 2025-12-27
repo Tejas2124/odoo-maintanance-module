@@ -8,6 +8,7 @@ export interface LoginPayload {
 export interface RegisterPayload {
     email: string;
     password: string;
+    role?: "ADMIN" | "USER";
 }
 
 export interface RegisterResponse {
@@ -126,4 +127,182 @@ export async function logoutUser() {
         console.error("Error occurred while logoutUser", error);
         throw error;
     }
+}
+
+// ============ TEAMS API ============
+
+export interface Team {
+    id: string;
+    name: string;
+    description?: string;
+    created_at: string;
+}
+
+export async function getTeams(): Promise<Team[]> {
+    const response = await fetch(`${API_URL}/teams/`, {
+        credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch teams");
+    return response.json();
+}
+
+export async function createTeam(data: { name: string; description?: string }): Promise<Team> {
+    const response = await fetch(`${API_URL}/teams/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to create team");
+    }
+    return response.json();
+}
+
+// ============ EQUIPMENT API ============
+
+export interface Equipment {
+    id: string;
+    name: string;
+    category: string;
+    company?: string;
+    description?: string;
+    used_by_type?: "EMPLOYEE" | "DEPARTMENT";
+    used_by_user_id?: string;
+    used_in_location?: string;
+    work_center?: string;
+    maintenance_team_id?: string;
+    default_technician_id?: string;
+    assigned_date?: string;
+    scrap_date?: string;
+    is_scrapped: boolean;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface EquipmentCreate {
+    name: string;
+    category: string;
+    company?: string;
+    description?: string;
+    used_by_type?: "EMPLOYEE" | "DEPARTMENT";
+    used_by_user_id: string;
+    maintenance_team_id: string;
+    default_technician_id: string;
+    used_in_location?: string;
+    work_center?: string;
+    assigned_date?: string;
+}
+
+export async function getEquipment(): Promise<Equipment[]> {
+    const response = await fetch(`${API_URL}/equipment/`, {
+        credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch equipment");
+    return response.json();
+}
+
+export async function getMyEquipment(): Promise<Equipment[]> {
+    const response = await fetch(`${API_URL}/equipment/my/list`, {
+        credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch equipment");
+    return response.json();
+}
+
+export async function createEquipment(data: EquipmentCreate): Promise<Equipment> {
+    const response = await fetch(`${API_URL}/equipment/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to create equipment");
+    }
+    return response.json();
+}
+
+// ============ TICKETS API ============
+
+export interface Ticket {
+    id: string;
+    subject: string;
+    description?: string;
+    equipment_id: string;
+    maintenance_team_id: string;
+    assigned_user_id?: string;
+    request_type: "CORRECTIVE" | "PREVENTIVE";
+    status: "NEW" | "IN_PROGRESS" | "REPAIRED" | "SCRAP";
+    priority: number;
+    scheduled_date?: string;
+    completed_at?: string;
+    duration_hours?: number;
+    company?: string;
+    created_by: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface TicketCreate {
+    subject: string;
+    description?: string;
+    equipment_id: string;
+    request_type?: "CORRECTIVE" | "PREVENTIVE";
+}
+
+export interface TicketAdminUpdate {
+    subject?: string;
+    description?: string;
+    status?: "NEW" | "IN_PROGRESS" | "REPAIRED" | "SCRAP";
+    priority?: number;
+    scheduled_date?: string;
+    duration_hours?: number;
+    assigned_user_id?: string;
+}
+
+export async function getTickets(): Promise<Ticket[]> {
+    const response = await fetch(`${API_URL}/tickets/`, {
+        credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch tickets");
+    return response.json();
+}
+
+export async function getMyTickets(): Promise<Ticket[]> {
+    const response = await fetch(`${API_URL}/tickets/my`, {
+        credentials: "include",
+    });
+    if (!response.ok) throw new Error("Failed to fetch tickets");
+    return response.json();
+}
+
+export async function createTicket(data: TicketCreate): Promise<Ticket> {
+    const response = await fetch(`${API_URL}/tickets/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to create ticket");
+    }
+    return response.json();
+}
+
+export async function updateTicket(id: string, data: TicketAdminUpdate): Promise<Ticket> {
+    const response = await fetch(`${API_URL}/tickets/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        credentials: "include",
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to update ticket");
+    }
+    return response.json();
 }

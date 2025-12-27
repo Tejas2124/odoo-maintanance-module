@@ -10,14 +10,20 @@ interface User {
   is_active: boolean;
   is_superuser: boolean;
   is_verified: boolean;
+  role: "ADMIN" | "USER";
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  isAdmin: boolean;
   loginAction: (email: string, password: string) => Promise<void>;
   logoutAction: () => Promise<void>;
-  registerAction: (email: string, password: string) => Promise<void>;
+  registerAction: (
+    email: string,
+    password: string,
+    role?: "ADMIN" | "USER"
+  ) => Promise<void>;
 }
 // Creating Auth Context
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -41,7 +47,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const currUser = await getCurrentUser();
         setUser(currUser);
       } catch {
-
         setUser(null);
       } finally {
         setLoading(false);
@@ -68,27 +73,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function logoutAction() {
     try {
       await logoutUser();
-      setUser(null); 
+      setUser(null);
     } catch (error) {
       console.error("Logout failed in AuthProvider", error);
       // TODO: Replace with toast notification system
-      throw error; 
+      throw error;
     }
   }
 
-  async function registerAction(email: string, password: string) {
+  async function registerAction(
+    email: string,
+    password: string,
+    role: "ADMIN" | "USER" = "USER"
+  ) {
     try {
       console.log("registerAction called in AuthProvider");
-      await handleSignup({ email, password });
+      await handleSignup({ email, password, role });
       await loginAction(email, password); // Auto-login after successful registration
     } catch (error) {
       console.log("Registration failed in AuthProvider", error);
       throw error;
     }
   }
+  const isAdmin = user?.role === "ADMIN";
+
   return (
     <AuthContext.Provider
-      value={{ user, loading, loginAction, logoutAction, registerAction }}
+      value={{
+        user,
+        loading,
+        isAdmin,
+        loginAction,
+        logoutAction,
+        registerAction,
+      }}
     >
       {children}
     </AuthContext.Provider>

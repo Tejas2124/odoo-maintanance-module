@@ -13,7 +13,7 @@ from sqlalchemy.orm import DeclarativeBase
 load_dotenv()
 
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
-DATABASE_URL = f"postgresql+asyncpg://postgres:{DB_PASSWORD}@localhost:5432/postgres"
+DATABASE_URL = f"postgresql+asyncpg://postgres:{DB_PASSWORD}@localhost:5432/oddox"
 
 
 class Base(DeclarativeBase):

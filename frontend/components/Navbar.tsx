@@ -38,7 +38,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center space-x-2">
             <span className="font-bold text-xl tracking-tight">
-              AI Dictionary
+              Odoo Maintainance
             </span>
           </Link>
         </div>

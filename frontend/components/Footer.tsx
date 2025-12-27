@@ -7,31 +7,13 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="flex items-center gap-2">
             <span className="font-bold text-lg tracking-tight">
-              AI Dictionary
+              Maintainer
             </span>
           </div>
           <div className="flex gap-16 text-sm text-muted-foreground">
-            <Twitter
-              href="#"
-              className="hover:text-foreground transition-colors"
-            >
-              Twitter
-            </Twitter>
-            <Linkedin
-              href="#"
-              className="hover:text-foreground transition-colors"
-            >
-              LinkedIn
-            </Linkedin>
-            <Github
-              href="https://github.com/recent-ai/Ai-Dictionary"
-              className="hover:text-foreground transition-colors"
-            >
-              GitHub
-            </Github>
           </div>
           <p className="text-xs text-muted-foreground">
-            © 2025 AI Dictionary. All rights reserved.
+            © 2025 Odoo Maintainer. All rights reserved.
           </p>
         </div>
       </div>

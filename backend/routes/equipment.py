@@ -44,7 +44,32 @@ async def create_equipment(
     session: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_admin),  # noqa: B008
 ):
-    """Create new equipment (Admin only)."""
+    """Create new equipment (Admin only). Requires owner and maintenance assignment."""
+    from models import MaintenanceTeam, MaintenanceTeamMember
+    
+    # Validate maintenance team exists
+    team_result = await session.execute(
+        select(MaintenanceTeam).where(MaintenanceTeam.id == equipment_data.maintenance_team_id)
+    )
+    if not team_result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=400,
+            detail=f"Maintenance team {equipment_data.maintenance_team_id} not found"
+        )
+    
+    # Validate technician is member of the team
+    member_result = await session.execute(
+        select(MaintenanceTeamMember).where(
+            MaintenanceTeamMember.user_id == equipment_data.default_technician_id,
+            MaintenanceTeamMember.team_id == equipment_data.maintenance_team_id
+        )
+    )
+    if not member_result.scalar_one_or_none():
+        raise HTTPException(
+            status_code=400,
+            detail=f"Technician {equipment_data.default_technician_id} is not a member of team {equipment_data.maintenance_team_id}"
+        )
+    
     equipment = Equipment(**equipment_data.model_dump())
     session.add(equipment)
     await session.commit()

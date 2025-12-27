@@ -48,14 +48,10 @@ async def create_db_and_tables():
     
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-        # Verify database connection
-        result = await conn.execute(text("SELECT current_database()"))
-        print("CONNECTED DB:", result.scalar())
 
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:
-        print(f"DEBUG REQUEST: Engine is connected to: {engine.url.database}", flush=True)
         yield session
 
 

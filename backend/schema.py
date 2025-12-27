@@ -34,16 +34,16 @@ class EquipmentBase(BaseModel):
     category: str
     company: Optional[str] = None
     description: Optional[str] = None
-    used_by_type: Optional[str] = None
+    used_by_type: Optional[EquipmentUsedByType] = None
     used_in_location: Optional[str] = None
     work_center: Optional[str] = None
 
 
 class EquipmentCreate(EquipmentBase):
-    """Admin creates equipment with ownership and maintenance assignment."""
-    used_by_user_id: Optional[uuid.UUID] = None
-    maintenance_team_id: Optional[uuid.UUID] = None
-    default_technician_id: Optional[uuid.UUID] = None
+    """Admin creates equipment - must assign owner and maintenance team."""
+    used_by_user_id: uuid.UUID  # Required: who owns/uses this equipment
+    maintenance_team_id: uuid.UUID  # Required: which team maintains it
+    default_technician_id: uuid.UUID  # Required: default technician for tickets
     assigned_date: Optional[date] = None
 
 
@@ -53,7 +53,7 @@ class EquipmentUpdate(BaseModel):
     category: Optional[str] = None
     company: Optional[str] = None
     description: Optional[str] = None
-    used_by_type: Optional[str] = None
+    used_by_type: Optional[EquipmentUsedByType] = None
     used_by_user_id: Optional[uuid.UUID] = None
     used_in_location: Optional[str] = None
     work_center: Optional[str] = None

@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from auth.auth import lifespan
 from auth.auth import router as auth_router
+from routes.teams import router as teams_router
 from routes.equipment import router as equipment_router
 from routes.tickets import router as tickets_router
 
@@ -40,6 +41,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(teams_router)  # Teams first - needed before equipment
 app.include_router(equipment_router)
 app.include_router(tickets_router)
 

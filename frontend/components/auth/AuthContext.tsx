@@ -10,7 +10,6 @@ interface User {
   is_active: boolean;
   is_superuser: boolean;
   is_verified: boolean;
-  role: "ADMIN" | "USER";
 }
 
 interface AuthContextType {

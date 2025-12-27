@@ -1,6 +1,6 @@
 import uuid
 
-from fastapi import Depends, Request
+from fastapi import Depends, HTTPException, Request, status
 from fastapi_users import BaseUserManager, FastAPIUsers, UUIDIDMixin, models
 from fastapi_users.authentication import (
     AuthenticationBackend,
@@ -9,7 +9,7 @@ from fastapi_users.authentication import (
 )
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 
-from auth.dbs import User, get_user_db
+from auth.dbs import Role, User, get_user_db
 
 SECRET = "SECRET"
 
@@ -69,3 +69,38 @@ auth_backend = AuthenticationBackend(
 fastapi_users = FastAPIUsers[User, uuid.UUID](get_user_manager, [auth_backend])
 
 current_active_user = fastapi_users.current_user(active=True)
+
+
+async def current_admin(user: User = Depends(current_active_user)) -> User:  # noqa: B008
+    """
+    Dependency that requires the current user to be an admin.
+    
+    Raises:
+        HTTPException: 403 if user is not an admin.
+    """
+    if user.role != Role.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return user
+
+
+def require_role(*allowed_roles: Role):
+    """
+    Factory that creates a dependency requiring specific roles.
+    
+    Usage:
+        @router.get("/route")
+        async def route(user: User = Depends(require_role(Role.ADMIN, Role.USER))):
+            ...
+    """
+    async def role_checker(user: User = Depends(current_active_user)) -> User:  # noqa: B008
+        if user.role not in allowed_roles:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=f"Requires one of: {[r.value for r in allowed_roles]}"
+            )
+        return user
+    return role_checker
+

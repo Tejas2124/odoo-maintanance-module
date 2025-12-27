@@ -7,6 +7,7 @@ from auth.schema import UserCreate, UserRead, UserUpdate
 from auth.users import (
     auth_backend,
     current_active_user,
+    current_admin,
     fastapi_users,
 )
 
@@ -48,6 +49,33 @@ router.include_router(
 )
 
 
+# ============ Protected Route Examples ============
+
 @router.get("/authenticated-route")
-async def authenticated_route(user: User = Depends(current_active_user)):  # noqa: B008 for now
-    return {"message": f"Hello {user.email}!"}
+async def authenticated_route(user: User = Depends(current_active_user)):  # noqa: B008
+    """Any authenticated user can access this route."""
+    return {"message": f"Hello {user.email}!", "role": user.role}
+
+
+@router.get("/admin-only", tags=["admin"])
+async def admin_only_route(user: User = Depends(current_admin)):  # noqa: B008
+    """Only admin users can access this route."""
+    return {
+        "message": "Welcome, Admin!",
+        "user_id": str(user.id),
+        "email": user.email
+    }
+
+
+@router.get("/me", tags=["users"])
+async def get_current_user_info(user: User = Depends(current_active_user)):  # noqa: B008
+    """Get current user's information including role."""
+    return {
+        "id": str(user.id),
+        "email": user.email,
+        "role": user.role,
+        "is_active": user.is_active,
+        "is_verified": user.is_verified,
+        "is_superuser": user.is_superuser
+    }
+
